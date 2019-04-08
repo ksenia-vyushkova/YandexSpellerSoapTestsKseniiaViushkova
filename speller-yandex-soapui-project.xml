@@ -3,7 +3,7 @@
   <con:entry key="Report Format(s)" value=""/>
   <con:entry key="Host:Port" value=""/>
   <con:entry key="Export JUnit Results" value="false"/>
-  <con:entry key="Export All" value="false"/>
+  <con:entry key="Export All" value="true"/>
   <con:entry key="Save After" value="false"/>
   <con:entry key="Add Settings" value="false"/>
   <con:entry key="WSS Password Type" value=""/>
@@ -12,24 +12,24 @@
   <con:entry key="Select Report Type" value=""/>
   <con:entry key="System Properties" value=""/>
   <con:entry key="Password" value=""/>
-  <con:entry key="Print Report" value="false"/>
+  <con:entry key="Print Report" value="true"/>
   <con:entry key="Open Report" value="false"/>
   <con:entry key="Export JUnit Results with test properties" value="false"/>
   <con:entry key="Global Properties" value=""/>
   <con:entry key="Project Properties" value=""/>
   <con:entry key="Project Password" value=""/>
-  <con:entry key="TestCase" value="&lt;all>"/>
+  <con:entry key="TestCase" value="BasicPositiveCorrectionTestCase"/>
   <con:entry key="Username" value=""/>
   <con:entry key="user-settings.xml Password" value=""/>
   <con:entry key="TestRunner Path" value=""/>
   <con:entry key="Environment" value="Default"/>
   <con:entry key="Coverage Report" value="false"/>
   <con:entry key="Enable UI" value="false"/>
-  <con:entry key="Root Folder" value=""/>
+  <con:entry key="Root Folder" value="D:\EPAM\YandexSpellerTests\YandexSpellerSoapTestsKseniiaViushkova\results"/>
   <con:entry key="Ignore Errors" value="false"/>
   <con:entry key="Domain" value=""/>
   <con:entry key="Tool Args" value=""/>
-  <con:entry key="Save Project" value="false"/>
+  <con:entry key="Save Project" value="true"/>
 </xml-fragment>]]></con:setting></con:settings><con:interface xsi:type="con:WsdlInterface" id="c6512f89-c056-4106-913f-9dfdeb10f8f8" wsaVersion="NONE" name="SpellServiceSoap" type="wsdl" bindingName="{http://speller.yandex.net/services/spellservice}SpellServiceSoap" soapVersion="1_1" anonymous="optional" definition="https://speller.yandex.net/services/spellservice?WSDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://speller.yandex.net/services/spellservice?WSDL"><con:part><con:url>https://speller.yandex.net/services/spellservice?WSDL</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://speller.yandex.net/services/spellservice" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://speller.yandex.net/services/spellservice" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://speller.yandex.net/services/spellservice">
@@ -324,67 +324,101 @@
          <spel:text>?</spel:text>\r
       </spel:CheckTextsRequest>\r
    </soap:Body>\r
-</soap:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://speller.yandex.net/services/spellservice/SpellServiceSoap/checkTextsRequest"/></con:call></con:operation></con:interface><con:testSuite id="6c060929-6403-4b90-928a-d2c716cf0ca8" name="SmokeTests"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="b1d98822-6fa2-48b1-959c-111bbe305e45" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="BasicPositiveCorrectionTestCase" searchProperties="true"><con:settings/><con:testStep type="properties" name="Properties" id="0460e610-0b56-4de5-99b8-504674ad0be5"><con:settings/><con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:properties><con:property><con:name>text</con:name><con:value/></con:property><con:property><con:name>expeсtedCorrection</con:name><con:value/></con:property></con:properties></con:config></con:testStep><con:testStep type="groovy" name="CheckValidTextsContainingErrors" id="779142ae-bfe7-47bc-8d34-6eab61110a63"><con:settings/><con:config><script>def texts = [
-        "карова",
-        "малако",
-        "облоко",
-        "перескоп",
-        "пречина",
-        "колобог",
-        "машына",
-        "побдорка",
-        "працэнт",
-        "абажюр"
+</soap:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://speller.yandex.net/services/spellservice/SpellServiceSoap/checkTextsRequest"/></con:call></con:operation></con:interface><con:testSuite id="6c060929-6403-4b90-928a-d2c716cf0ca8" name="SmokeTests"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="b1d98822-6fa2-48b1-959c-111bbe305e45" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="BasicPositiveCorrectionTestCase" searchProperties="true"><con:settings/><con:testStep type="groovy" name="CheckValidTextsContainingErrors" id="779142ae-bfe7-47bc-8d34-6eab61110a63"><con:settings/><con:config><script>import org.apache.commons.io.FilenameUtils;
+
+def texts = [
+        ["карова", "корова"],
+        ["малако", "молоко"],
+        ["облоко", "облако"],
+        ["перескоп", "перископ"],
+        ["пречина", "причина1"],
+        ["колобог", "колобок"],
+        ["машына", "машина"],
+        ["побдорка", "подборка"],
+        ["працэнт", "процент"],
+        ["абажюр", "абажур"]
 ]
 
-def expeсtedCorrections = [
-        "корова",
-        "молоко",
-        "облако",
-        "перископ",
-        "причина",
-        "колобок",
-        "машина",
-        "подборка",
-        "процент",
-        "абажур"
-]
+Integer counter = Integer.parseInt(testRunner.testCase.getPropertyValue("counter"))
 
-def n = texts.size()
-
-for (int i = 0; i &lt; n ; i++) {
-    testRunner.testCase.testSteps['Properties'].setPropertyValue("text",texts[i])
-    testRunner.testCase.testSteps['Properties'].setPropertyValue("expeсtedCorrection", expeсtedCorrections[i])
+if (counter > 0) {
+    counter--
+    testRunner.testCase.setPropertyValue("text", texts[counter][0])
+    testRunner.testCase.setPropertyValue("expeсtedCorrection", texts[counter][1])
     def result = testRunner.testCase.testSteps["CheckText"].run(testRunner, context)
+    
     log.info(result.getStatus().toString())
-}
-</script></con:config></con:testStep><con:testStep type="request" name="CheckText" id="efd47bd2-94c0-45fe-abd9-76604e711f54" disabled="true"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SpellServiceSoap</con:interface><con:operation>checkText</con:operation><con:request name="CheckText" id="66f9b16b-54b3-4e4a-9c2e-2e171202d063"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://speller.yandex.net/services/spellservice</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:spel="http://speller.yandex.net/services/spellservice">\r
+   
+    try {
+    	   def resultsFolderPath = testRunner.testCase.getPropertyValue("resultsFolderPath")
+    	   def resultsFileName =  testRunner.testCase.getPropertyValue("resultsFileName")
+    	   def resultsFile = new File(resultsFolderPath, resultsFileName)
+        def testSuite = testRunner.testCase.testSuite.name
+        def testCase = testRunner.testCase.name
+        def testStep = result.getTestStep()
+        def testStepName = testStep.name
+        def type = testStep.config.type
+        def status = result.getStatus()
+         Date d = new Date();
+         def executionDate = d.format("dd-MM-yyyy_HH_mm");
+        resultsFile.append('\n')
+        resultsFile.append('"' + testSuite + '",')
+        resultsFile.append('"' + testCase + '",')
+        resultsFile.append('"' + testStepName + '",')
+        resultsFile.append('"' + type + '",')
+        resultsFile.append('"' + status + '",')
+        resultsFile.append('"' + executionDate + '",')
+        resultsFile.append('"Text: ' + texts[counter][0] + ', expected correction: ' + texts[counter][1] + '"')
+    }
+    catch (e) {
+        log.error("Exception happened: " + e.toString());
+    }
+
+    testRunner.testCase.setPropertyValue("counter", counter.toString())
+    testRunner.testCase.testSteps["CheckValidTextsContainingErrors"].run(testRunner, context)
+}</script></con:config></con:testStep><con:testStep type="request" name="CheckText" id="efd47bd2-94c0-45fe-abd9-76604e711f54" disabled="true"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SpellServiceSoap</con:interface><con:operation>checkText</con:operation><con:request name="CheckText" id="66f9b16b-54b3-4e4a-9c2e-2e171202d063"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://speller.yandex.net/services/spellservice</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:spel="http://speller.yandex.net/services/spellservice">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <spel:CheckTextRequest>\r
-         <spel:text>${Properties#text}</spel:text>\r
+         <spel:text>${#TestCase#text}</spel:text>\r
       </spel:CheckTextRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="656b6088-0308-49fa-9180-7bb8d11dc87f"/><con:assertion type="Schema Compliance" id="f9067adb-49f4-4b82-ac99-6baa0cfb87bb"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="9550e659-dcd2-44b5-8fa5-a56bcac430dd"/><con:assertion type="Simple Contains" id="c01a5680-4ce5-4132-a742-4bd93ee075aa" name="Contains"><con:configuration><token>               &lt;word>${Properties#text}&lt;/word>
-               &lt;s>${Properties#expeсtedCorrection}&lt;/s></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="groovy" name="TearDown" id="3d554f76-2101-4dbf-898d-5df04b8a10b0"><con:settings/><con:config><script>testRunner.testCase.testSteps['Properties'].setPropertyValue("text", "")
-testRunner.testCase.testSteps['Properties'].setPropertyValue("expeсtedCorrection", "")</script></con:config></con:testStep><con:tearDownScript/><con:properties/></con:testCase><con:testCase id="cefbc1bb-ddd9-4942-b5e6-4f0521a8ddae" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="BasicTest" searchProperties="true"><con:settings/><con:testStep type="request" name="BasicRequest" id="ac5d42a0-cdf4-4cba-8a8b-bbc13c50f144"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SpellServiceSoap</con:interface><con:operation>checkText</con:operation><con:request name="BasicRequest" id="306eab89-23c0-4e4b-a4a4-42bed0f1bc38"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://speller.yandex.net/services/spellservice</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:spel="http://speller.yandex.net/services/spellservice">\r
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="656b6088-0308-49fa-9180-7bb8d11dc87f"/><con:assertion type="Schema Compliance" id="f9067adb-49f4-4b82-ac99-6baa0cfb87bb"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="9550e659-dcd2-44b5-8fa5-a56bcac430dd"/><con:assertion type="Simple Contains" id="c01a5680-4ce5-4132-a742-4bd93ee075aa" name="Contains"><con:configuration><token>               &lt;word>${#TestCase#text}&lt;/word>
+               &lt;s>${#TestCase#expeсtedCorrection}&lt;/s></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:setupScript>testRunner.testCase.setPropertyValue("counter", "10")
+testRunner.testCase.setPropertyValue("text", "карова")
+testRunner.testCase.setPropertyValue("expeсtedCorrection", "корова")
+testRunner.testCase.testSuite.project.testSuites["Library"].testCases["ReportingUtility"].testSteps["GenerateOutputFile"].run(testRunner, context);</con:setupScript><con:tearDownScript>testRunner.testCase.setPropertyValue("counter", "10")
+testRunner.testCase.setPropertyValue("text", "карова")
+testRunner.testCase.setPropertyValue("expeсtedCorrection", "корова")</con:tearDownScript><con:properties><con:property><con:name>counter</con:name><con:value>10</con:value></con:property><con:property><con:name>text</con:name><con:value>карова</con:value></con:property><con:property><con:name>expeсtedCorrection</con:name><con:value>корова</con:value></con:property><con:property><con:name>outputFilePath</con:name><con:value>D:\EPAM\YandexSpellerTests\YandexSpellerSoapTestsKseniiaViushkova/speller-yandex-soapui-project_soapui-results</con:value></con:property><con:property><con:name>outputFileName</con:name><con:value>report_08-04-2019_23_48.csv</con:value></con:property><con:property><con:name>resultsFolderPath</con:name><con:value>D:\EPAM\YandexSpellerTests\YandexSpellerSoapTestsKseniiaViushkova/speller-yandex-soapui-project_soapui-results</con:value></con:property><con:property><con:name>resultsFileName</con:name><con:value>report_09-04-2019_00_06.csv</con:value></con:property></con:properties></con:testCase><con:testCase id="cefbc1bb-ddd9-4942-b5e6-4f0521a8ddae" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="BasicTest" searchProperties="true"><con:settings/><con:testStep type="request" name="BasicRequest" id="ac5d42a0-cdf4-4cba-8a8b-bbc13c50f144"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SpellServiceSoap</con:interface><con:operation>checkText</con:operation><con:request name="BasicRequest" id="306eab89-23c0-4e4b-a4a4-42bed0f1bc38"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://speller.yandex.net/services/spellservice</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:spel="http://speller.yandex.net/services/spellservice">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <spel:CheckTextRequest>\r
          <spel:text>карова</spel:text>\r
       </spel:CheckTextRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="6dd57583-f1b8-40f9-8550-62136288e5bf"/><con:assertion type="Schema Compliance" id="4d199fcd-5085-4137-b337-fd08f9069ebd"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="4a32f6f0-e5ca-453e-a546-a3e1e4af7359"/><con:assertion type="Simple Contains" id="e6c578b6-8f7c-443b-b1ab-690a2b727bf2" name="Contains"><con:configuration><token>123</token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:tearDownScript/><con:properties/></con:testCase><con:properties/></con:testSuite><con:testSuite id="0914d5f9-32dd-48a3-bbf5-c4dc1187e843" name="Library" disabled="true"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="0939db82-fb54-4f81-b93d-e2b6be293822" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="ReportingUtility" searchProperties="true" disabled="true"><con:settings/><con:testStep type="groovy" name="GenerateReport" id="c05a7269-2334-4155-ae72-93047ab4733f"><con:settings/><con:config><script>import org.apache.commons.io.FilenameUtils;
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="6dd57583-f1b8-40f9-8550-62136288e5bf"/><con:assertion type="Schema Compliance" id="4d199fcd-5085-4137-b337-fd08f9069ebd"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="4a32f6f0-e5ca-453e-a546-a3e1e4af7359"/><con:assertion type="Simple Contains" id="e6c578b6-8f7c-443b-b1ab-690a2b727bf2" name="Contains"><con:configuration><token>123</token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:tearDownScript/><con:properties/></con:testCase><con:properties/></con:testSuite><con:testSuite id="0914d5f9-32dd-48a3-bbf5-c4dc1187e843" name="Library" disabled="true"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="0939db82-fb54-4f81-b93d-e2b6be293822" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="ReportingUtility" searchProperties="true" disabled="true"><con:settings/><con:testStep type="groovy" name="GenerateOutputFile" id="03d0d647-94c7-4e5a-8cbd-40d51d1ded85"><con:settings/><con:config><script>import org.apache.commons.io.FilenameUtils;
 
 try {
     //1. Create project results folder
     def projectPath = new com.eviware.soapui.support.GroovyUtils(context).projectPath
     def projectFileNameWithoutExtension = FilenameUtils.removeExtension(new File(testRunner.getTestCase().getTestSuite().getProject().getPath()).getName())
-    def folderPath = projectPath + "/" + projectFileNameWithoutExtension + "_soapui-results"
-    new File(folderPath).mkdirs()
+    def resultsFolderPath = projectPath + "/" + projectFileNameWithoutExtension + "_soapui-results"
+    new File(resultsFolderPath).mkdirs()
 
-    //2.TODO
+    //2. Create results file
+    Date d = new Date();
+    def executionDate = d.format("dd-MM-yyyy_HH_mm");
+    def resultsFileName = "report_" + executionDate + ".csv"
+    def resultsFile = new File(resultsFolderPath, resultsFileName)
+    if (!resultsFile.exists()) {
+        resultsFile.createNewFile()
+        resultsFile.write('"Test Suite","Test Case","Test Step","Step Type","Step Status","Execution Date","Additional Info"')
+    }
+
+    //3. Add file info to proect properties
+    testRunner.testCase.setPropertyValue("resultsFolderPath", resultsFolderPath)
+    testRunner.testCase.setPropertyValue("resultsFileName", resultsFileName)
 }
-catch (exc) {
-    log.error("Exception happened: " + exc.toString());
-}</script></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
+catch (e) {
+    log.error("Exception happened: " + e.toString());
+}</script></con:config></con:testStep><con:properties/></con:testCase><con:properties><con:property><con:name>outputFilePath</con:name><con:value>D:\EPAM\YandexSpellerTests\YandexSpellerSoapTestsKseniiaViushkova/speller-yandex-soapui-project_soapui-results</con:value></con:property><con:property><con:name>outputFileName</con:name><con:value>report_08-04-2019_23_46.csv</con:value></con:property></con:properties></con:testSuite><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
