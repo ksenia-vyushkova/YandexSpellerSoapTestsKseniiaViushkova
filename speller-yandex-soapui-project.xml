@@ -324,14 +324,15 @@
          <spel:text>?</spel:text>\r
       </spel:CheckTextsRequest>\r
    </soap:Body>\r
-</soap:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://speller.yandex.net/services/spellservice/SpellServiceSoap/checkTextsRequest"/></con:call></con:operation></con:interface><con:testSuite id="6c060929-6403-4b90-928a-d2c716cf0ca8" name="SmokeTests"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="b1d98822-6fa2-48b1-959c-111bbe305e45" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="BasicPositiveCorrectionTestCase" searchProperties="true"><con:settings/><con:testStep type="groovy" name="CheckValidTextsContainingErrors" id="779142ae-bfe7-47bc-8d34-6eab61110a63"><con:settings/><con:config><script>import org.apache.commons.io.FilenameUtils;
+</soap:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://speller.yandex.net/services/spellservice/SpellServiceSoap/checkTextsRequest"/></con:call></con:operation></con:interface><con:testSuite id="6c060929-6403-4b90-928a-d2c716cf0ca8" name="SmokeTests"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="b1d98822-6fa2-48b1-959c-111bbe305e45" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="TextsWithCorrectionsSmokeTestCase" searchProperties="true"><con:settings/><con:testStep type="groovy" name="CheckValidTextsContainingErrors" id="779142ae-bfe7-47bc-8d34-6eab61110a63"><con:settings/><con:config><script>import org.apache.commons.io.FilenameUtils;
 
+//Texts array contains pairs consisting of a text fed to speller and correction expected in responce
 def texts = [
         ["карова", "корова"],
         ["малако", "молоко"],
         ["облоко", "облако"],
         ["перескоп", "перископ"],
-        ["пречина", "причина1"],
+        ["пречина", "причина"],
         ["колобог", "колобок"],
         ["машына", "машина"],
         ["побдорка", "подборка"],
@@ -339,16 +340,21 @@ def texts = [
         ["абажюр", "абажур"]
 ]
 
+//1. Get counter value
 Integer counter = Integer.parseInt(testRunner.testCase.getPropertyValue("counter"))
 
+//2. If counter is greater than zero, perform test
 if (counter > 0) {
-    counter--
-    testRunner.testCase.setPropertyValue("text", texts[counter][0])
-    testRunner.testCase.setPropertyValue("expeсtedCorrection", texts[counter][1])
+    //3. Update test case properties to reflect current test step corresponding to the counter
+    def arrayIndex = texts.size() - counter
+    testRunner.testCase.setPropertyValue("text", texts[arrayIndex][0])
+    testRunner.testCase.setPropertyValue("expeсtedCorrection", texts[arrayIndex][1])
     def result = testRunner.testCase.testSteps["CheckText"].run(testRunner, context)
-    
-    log.info(result.getStatus().toString())
-   
+
+    //4. Log test result to consle
+    log.info "text: " + texts[arrayIndex][0] + ", result: " + result.getStatus().toString()
+
+   //5. Log test result to file
     try {
     	   def resultsFolderPath = testRunner.testCase.getPropertyValue("resultsFolderPath")
     	   def resultsFileName =  testRunner.testCase.getPropertyValue("resultsFileName")
@@ -359,8 +365,8 @@ if (counter > 0) {
         def testStepName = testStep.name
         def type = testStep.config.type
         def status = result.getStatus()
-         Date d = new Date();
-         def executionDate = d.format("dd-MM-yyyy_HH_mm");
+        Date d = new Date();
+        def executionDate = d.format("dd-MM-yyyy_HH_mm")
         resultsFile.append('\n')
         resultsFile.append('"' + testSuite + '",')
         resultsFile.append('"' + testCase + '",')
@@ -368,13 +374,17 @@ if (counter > 0) {
         resultsFile.append('"' + type + '",')
         resultsFile.append('"' + status + '",')
         resultsFile.append('"' + executionDate + '",')
-        resultsFile.append('"Text: ' + texts[counter][0] + ', expected correction: ' + texts[counter][1] + '"')
+        resultsFile.append('"text: ' + texts[arrayIndex][0] + ', expected correction: ' + texts[arrayIndex][1] + '"')
     }
     catch (e) {
-        log.error("Exception happened: " + e.toString());
+        log.error("Exception happened: " + e.toString())
     }
 
+    //6. Update counter
+    counter--
     testRunner.testCase.setPropertyValue("counter", counter.toString())
+
+    //7. Recursive call
     testRunner.testCase.testSteps["CheckValidTextsContainingErrors"].run(testRunner, context)
 }</script></con:config></con:testStep><con:testStep type="request" name="CheckText" id="efd47bd2-94c0-45fe-abd9-76604e711f54" disabled="true"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SpellServiceSoap</con:interface><con:operation>checkText</con:operation><con:request name="CheckText" id="66f9b16b-54b3-4e4a-9c2e-2e171202d063"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://speller.yandex.net/services/spellservice</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:spel="http://speller.yandex.net/services/spellservice">\r
    <soapenv:Header/>\r
@@ -387,16 +397,84 @@ if (counter > 0) {
                &lt;s>${#TestCase#expeсtedCorrection}&lt;/s></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:setupScript>testRunner.testCase.setPropertyValue("counter", "10")
 testRunner.testCase.setPropertyValue("text", "карова")
 testRunner.testCase.setPropertyValue("expeсtedCorrection", "корова")
-testRunner.testCase.testSuite.project.testSuites["Library"].testCases["ReportingUtility"].testSteps["GenerateOutputFile"].run(testRunner, context);</con:setupScript><con:tearDownScript>testRunner.testCase.setPropertyValue("counter", "10")
+testRunner.testCase.testSuite.project.testSuites["Library"].testCases["ReportingUtility"].testSteps["GenerateResultsFile"].run(testRunner, context);</con:setupScript><con:tearDownScript>testRunner.testCase.setPropertyValue("counter", "10")
 testRunner.testCase.setPropertyValue("text", "карова")
-testRunner.testCase.setPropertyValue("expeсtedCorrection", "корова")</con:tearDownScript><con:properties><con:property><con:name>counter</con:name><con:value>10</con:value></con:property><con:property><con:name>text</con:name><con:value>карова</con:value></con:property><con:property><con:name>expeсtedCorrection</con:name><con:value>корова</con:value></con:property><con:property><con:name>outputFilePath</con:name><con:value>D:\EPAM\YandexSpellerTests\YandexSpellerSoapTestsKseniiaViushkova/speller-yandex-soapui-project_soapui-results</con:value></con:property><con:property><con:name>outputFileName</con:name><con:value>report_08-04-2019_23_48.csv</con:value></con:property><con:property><con:name>resultsFolderPath</con:name><con:value>D:\EPAM\YandexSpellerTests\YandexSpellerSoapTestsKseniiaViushkova/speller-yandex-soapui-project_soapui-results</con:value></con:property><con:property><con:name>resultsFileName</con:name><con:value>report_09-04-2019_00_06.csv</con:value></con:property></con:properties></con:testCase><con:testCase id="cefbc1bb-ddd9-4942-b5e6-4f0521a8ddae" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="BasicTest" searchProperties="true"><con:settings/><con:testStep type="request" name="BasicRequest" id="ac5d42a0-cdf4-4cba-8a8b-bbc13c50f144"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SpellServiceSoap</con:interface><con:operation>checkText</con:operation><con:request name="BasicRequest" id="306eab89-23c0-4e4b-a4a4-42bed0f1bc38"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://speller.yandex.net/services/spellservice</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:spel="http://speller.yandex.net/services/spellservice">\r
-   <soapenv:Header/>\r
-   <soapenv:Body>\r
-      <spel:CheckTextRequest>\r
-         <spel:text>карова</spel:text>\r
-      </spel:CheckTextRequest>\r
-   </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="6dd57583-f1b8-40f9-8550-62136288e5bf"/><con:assertion type="Schema Compliance" id="4d199fcd-5085-4137-b337-fd08f9069ebd"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="4a32f6f0-e5ca-453e-a546-a3e1e4af7359"/><con:assertion type="Simple Contains" id="e6c578b6-8f7c-443b-b1ab-690a2b727bf2" name="Contains"><con:configuration><token>123</token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:tearDownScript/><con:properties/></con:testCase><con:properties/></con:testSuite><con:testSuite id="0914d5f9-32dd-48a3-bbf5-c4dc1187e843" name="Library" disabled="true"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="0939db82-fb54-4f81-b93d-e2b6be293822" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="ReportingUtility" searchProperties="true" disabled="true"><con:settings/><con:testStep type="groovy" name="GenerateOutputFile" id="03d0d647-94c7-4e5a-8cbd-40d51d1ded85"><con:settings/><con:config><script>import org.apache.commons.io.FilenameUtils;
+testRunner.testCase.setPropertyValue("expeсtedCorrection", "корова")</con:tearDownScript><con:properties><con:property><con:name>counter</con:name><con:value>10</con:value></con:property><con:property><con:name>text</con:name><con:value>карова</con:value></con:property><con:property><con:name>expeсtedCorrection</con:name><con:value>корова</con:value></con:property><con:property><con:name>resultsFolderPath</con:name><con:value>C:\EPAM\TestAuto\YandexSpellerSoapTestsKseniiaViushkova/speller-yandex-soapui-project_soapui-results</con:value></con:property><con:property><con:name>resultsFileName</con:name><con:value>report_09-04-2019_10_16.csv</con:value></con:property></con:properties></con:testCase><con:testCase id="f8931b85-b131-4eac-aa0e-5d220d511df9" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="TextsWithNoCorrectionsSmokeTestCase" searchProperties="true"><con:settings/><con:testStep type="groovy" name="CheckValidTextsWithoutErrors" id="d7f249c9-8131-47a7-97e1-e6dc58fcc0dc"><con:settings/><con:config><script>import org.apache.commons.io.FilenameUtils;
+
+//Texts array contains texts fed to speller, for which no correction is expected in responce
+def texts = [
+         "корова",
+        "молоко",
+        "облако",
+         "перископ",
+        "причина",
+        "колобок",
+        "машина",
+        "подборка",
+        "процент",
+        "абажур"
+]
+
+//1. Get counter value
+Integer counter = Integer.parseInt(testRunner.testCase.getPropertyValue("counter"))
+
+//2. If counter is greater than zero, perform test
+if (counter > 0) {
+	//3. Update test case properties to reflect current test step corresponding to the counter
+    def arrayIndex = texts.size() - counter
+    testRunner.testCase.setPropertyValue("text", texts[arrayIndex])
+    def result = testRunner.testCase.testSteps["CheckText"].run(testRunner, context)
+
+     //4. Log test result to consle
+    log.info "text: " + texts[arrayIndex]+ ", result: " + result.getStatus().toString()
+
+    //5. Log test result to file
+    try {
+    	   def resultsFolderPath = testRunner.testCase.getPropertyValue("resultsFolderPath")
+    	   def resultsFileName =  testRunner.testCase.getPropertyValue("resultsFileName")
+    	   def resultsFile = new File(resultsFolderPath, resultsFileName)
+        def testSuite = testRunner.testCase.testSuite.name
+        def testCase = testRunner.testCase.name
+        def testStep = result.getTestStep()
+        def testStepName = testStep.name
+        def type = testStep.config.type
+        def status = result.getStatus()
+        Date d = new Date()
+        def executionDate = d.format("dd-MM-yyyy_HH_mm")
+        resultsFile.append('\n')
+        resultsFile.append('"' + testSuite + '",')
+        resultsFile.append('"' + testCase + '",')
+        resultsFile.append('"' + testStepName + '",')
+        resultsFile.append('"' + type + '",')
+        resultsFile.append('"' + status + '",')
+        resultsFile.append('"' + executionDate + '",')
+        resultsFile.append('"Text: ' + texts[arrayIndex] + '"')
+    }
+    catch (e) {
+        log.error("Exception happened: " + e.toString())
+    }
+
+    //6. Update counter
+    counter--
+    testRunner.testCase.setPropertyValue("counter", counter.toString())
+
+    //7. Recursive call
+    testRunner.testCase.testSteps["CheckValidTextsWithoutErrors"].run(testRunner, context)
+}</script></con:config></con:testStep><con:testStep type="request" name="CheckText" id="9d814edc-d396-4904-b431-99f965364fc5" disabled="true"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SpellServiceSoap</con:interface><con:operation>checkText</con:operation><con:request name="CheckText" id="694579a7-8ff9-419d-a33c-0dd16e118bf4"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://speller.yandex.net/services/spellservice</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:spel="http://speller.yandex.net/services/spellservice">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <spel:CheckTextRequest>
+         <spel:text>${#TestCase#text}</spel:text>
+      </spel:CheckTextRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="940b8fe4-bff8-4625-966a-1676321face3"/><con:assertion type="Schema Compliance" id="4d3944d6-986b-4d3a-ac1b-b6a437c5143e"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="afe22583-0d17-4dbc-afaa-d9136a3beecd"/><con:assertion type="Simple Contains" id="89182567-5499-4325-a2aa-80770df5aac9" name="Contains"><con:configuration><token>      &lt;CheckTextResponse xmlns="http://speller.yandex.net/services/spellservice">
+         &lt;SpellResult/>
+      &lt;/CheckTextResponse></token><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:setupScript>testRunner.testCase.setPropertyValue("counter", "10")
+testRunner.testCase.setPropertyValue("text", "корова")
+testRunner.testCase.setPropertyValue("expeсtedCorrection", "корова")
+testRunner.testCase.testSuite.project.testSuites["Library"].testCases["ReportingUtility"].testSteps["GenerateResultsFile"].run(testRunner, context);</con:setupScript><con:tearDownScript>testRunner.testCase.setPropertyValue("counter", "10")
+testRunner.testCase.setPropertyValue("text", "корова")
+testRunner.testCase.setPropertyValue("expeсtedCorrection", "корова")</con:tearDownScript><con:properties><con:property><con:name>counter</con:name><con:value>10</con:value></con:property><con:property><con:name>text</con:name><con:value>корова</con:value></con:property><con:property><con:name>expeсtedCorrection</con:name><con:value>корова</con:value></con:property><con:property><con:name>resultsFolderPath</con:name><con:value>C:\EPAM\TestAuto\YandexSpellerSoapTestsKseniiaViushkova/speller-yandex-soapui-project_soapui-results</con:value></con:property><con:property><con:name>resultsFileName</con:name><con:value>report_09-04-2019_10_16.csv</con:value></con:property></con:properties></con:testCase><con:properties/></con:testSuite><con:testSuite id="0914d5f9-32dd-48a3-bbf5-c4dc1187e843" name="Library" disabled="true"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="0939db82-fb54-4f81-b93d-e2b6be293822" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="ReportingUtility" searchProperties="true" disabled="true"><con:settings/><con:testStep type="groovy" name="GenerateResultsFile" id="03d0d647-94c7-4e5a-8cbd-40d51d1ded85"><con:settings/><con:config><script>import org.apache.commons.io.FilenameUtils;
 
 try {
     //1. Create project results folder
@@ -415,7 +493,7 @@ try {
         resultsFile.write('"Test Suite","Test Case","Test Step","Step Type","Step Status","Execution Date","Additional Info"')
     }
 
-    //3. Add file info to proect properties
+    //3. Add file info to test case properties
     testRunner.testCase.setPropertyValue("resultsFolderPath", resultsFolderPath)
     testRunner.testCase.setPropertyValue("resultsFileName", resultsFileName)
 }
